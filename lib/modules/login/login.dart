@@ -1,8 +1,10 @@
+import 'package:ecommerce_app/layout/hidden_drawer_menu.dart';
 import 'package:ecommerce_app/modules/login/cubit/cubit.dart';
 import 'package:ecommerce_app/modules/login/cubit/states.dart';
 import 'package:ecommerce_app/modules/register/register.dart';
 import 'package:ecommerce_app/shared/components/components.dart';
 import 'package:ecommerce_app/shared/components/constant.dart';
+import 'package:ecommerce_app/shared/network/local/cacheHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -20,13 +22,20 @@ class LoginScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => LoginCubit(),
       child: BlocConsumer<LoginCubit,LoginStates>(
-        listener: (context, state) {
-          
+        listener: (context, state) 
+        {
+          if(state is LoginSuccessState)
+          {
+            showToast('Login Success', ToastStates.SUCCESS);
+            // CacheHelper.saveData(key: 'uId', value: state.uId);
+            navigatTo(context, HiddenDrawer());
+          }  else if(state is LoginErrorState)
+          showToast(state.error, ToastStates.ERROR);
         },
         builder: (context, state) { 
           var cubit = LoginCubit.get(context);
           return Scaffold(
-            appBar: AppBar(backgroundColor: defaultColor),
+            
           body: Container(
             height: double.infinity,
             color: Colors.grey[200],
@@ -126,7 +135,7 @@ class LoginScreen extends StatelessWidget {
                               {
                                 if(formKey.currentState!.validate())
                                 {
-                                  
+                                  cubit.userLogin(email: emailController.text, password: passwordController.text);
                                 }
                               }
                               

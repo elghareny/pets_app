@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "1063890324102",
+    "project_id": "social-a4aca",
+    "storage_bucket": "social-a4aca.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1063890324102:android:b56bbb85e5335c99e3df07",
+        "android_client_info": {
+          "package_name": "com.example.ecommerce_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1063890324102-tb9k2frdl7fkf0eab13tja7shrjmbthc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCYfIuMdJeNflDoihuMKtnUQBLXUSoS1Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1063890324102-tb9k2frdl7fkf0eab13tja7shrjmbthc.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1063890324102-96s22k6pgmsb3qqo0lqfa65c5b3pid8i.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.flutter.social"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

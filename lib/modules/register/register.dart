@@ -1,13 +1,16 @@
+import 'package:ecommerce_app/layout/hidden_drawer_menu.dart';
 import 'package:ecommerce_app/modules/register/cubit/cubit.dart';
 import 'package:ecommerce_app/modules/register/cubit/states.dart';
 import 'package:ecommerce_app/shared/components/components.dart';
 import 'package:ecommerce_app/shared/components/constant.dart';
+import 'package:ecommerce_app/shared/network/local/cacheHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RegisterScreen extends StatelessWidget {
    RegisterScreen({super.key});
 
+  var nameController = TextEditingController();
   var emailController = TextEditingController();
   var phoneController = TextEditingController();
   var passwordController = TextEditingController();
@@ -19,18 +22,21 @@ class RegisterScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => RegisterCubit(),
       child: BlocConsumer<RegisterCubit,RegisterStates>(
-        listener: (context, state) {
-          
+        listener: (context, state) 
+        {
+          if(state is CreateUserSuccessState)
+          {
+            showToast('Register Success', ToastStates.SUCCESS);
+            // CacheHelper.saveData(key: 'uId', value: state.uId);
+            navigatTo(context, HiddenDrawer());
+            
+          }else if(state is RegisterErrorState)
+          showToast(state.toString(), ToastStates.ERROR);
         },
         builder: (context, state) { 
           var cubit = RegisterCubit.get(context);
           return Scaffold(
-            appBar: AppBar(backgroundColor: defaultColor,
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back_ios_new,color: Colors.white),
-              onPressed: () => Navigator.pop(context),
-            ),
-            ),
+            
           body: Container(
             height: double.infinity,
             color: Colors.grey[200],
@@ -69,7 +75,7 @@ class RegisterScreen extends StatelessWidget {
                   child: Container(
                     width: 400,
                     alignment: AlignmentDirectional.center,
-                    height: 550,
+                    height: 640,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.all(Radius.circular(30))
@@ -90,7 +96,22 @@ class RegisterScreen extends StatelessWidget {
                             ),
                             SizedBox(height: 25,),
                             textField(
+                              controller: nameController, 
+                              type: TextInputType.name,
+                            validate: (value)
+                            {
+                              if(value!.isEmpty)
+                              {
+                                return 'Name not be empty';
+                              }return null;
+                            }, 
+                            text: 'Name', 
+                            prefixIcon: Icons.person
+                            ),
+                            SizedBox(height: 20,),
+                            textField(
                               controller: emailController, 
+                              type: TextInputType.emailAddress,
                             validate: (value)
                             {
                               if(value!.isEmpty)
@@ -104,6 +125,7 @@ class RegisterScreen extends StatelessWidget {
                             SizedBox(height: 20,),
                             textField(
                               controller: phoneController, 
+                              type: TextInputType.phone,
                             validate: (value)
                             {
                               if(value!.isEmpty)
@@ -117,6 +139,7 @@ class RegisterScreen extends StatelessWidget {
                             SizedBox(height: 20,),
                             textField(
                               controller: passwordController, 
+                              type: TextInputType.visiblePassword,
                             validate: (value)
                             {
                               if(value!.isEmpty)
@@ -131,6 +154,7 @@ class RegisterScreen extends StatelessWidget {
                             SizedBox(height: 20,),
                             textField(
                               controller: confirmPasswordController, 
+                              type: TextInputType.visiblePassword,
                             validate: (value)
                             {
                               if(value!.isEmpty)
@@ -152,7 +176,11 @@ class RegisterScreen extends StatelessWidget {
                               {
                                 if(formKey.currentState!.validate() && passwordController.text == confirmPasswordController.text)
                                 {
-                                  
+                                  cubit.userRegister(
+                                    email: emailController.text, 
+                                    password: passwordController.text, 
+                                    name: nameController.text, phone: 
+                                    phoneController.text);
                                 }
                               }
                               
