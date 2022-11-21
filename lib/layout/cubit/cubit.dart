@@ -1,4 +1,6 @@
 
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerce_app/layout/cubit/states.dart';
 import 'package:ecommerce_app/layout/home.dart';
@@ -7,11 +9,13 @@ import 'package:ecommerce_app/models/user_model.dart';
 import 'package:ecommerce_app/modules/profile/profile.dart';
 import 'package:ecommerce_app/modules/register/cubit/states.dart';
 import 'package:ecommerce_app/shared/components/constant.dart';
+import 'package:firebase_storage/firebase_storage.dart'as firebase_storage;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hidden_drawer_menu/hidden_drawer_menu.dart';
 import 'package:hidden_drawer_menu/model/screen_hidden_drawer.dart';
+import 'package:image_picker/image_picker.dart';
 
 class AppCubit extends Cubit<AppStates> {
   AppCubit() : super(InitialState());
@@ -32,6 +36,7 @@ void changegender(value)
 }
 
 
+///////////////////////////////////////////////////////////////////////////   user   //////////////////////////
 
 
   void getUser()
@@ -54,12 +59,88 @@ void changegender(value)
 
 
 
-  void addPet({
-  @required String? ownerId,
+/////////////////////////////////////////////////////////////////////////   add pet    /////////////////////////////
+
+File? Image;
+var picker = ImagePicker();
+
+Future <void> getPetImage ()async
+{
+  final PickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+  if(PickedFile != null)
+  {
+    Image = File(PickedFile.path);
+    emit(PetImagePickedSuccessState());
+  }else 
+  {
+    print('no image selected');
+    emit(PetImagePickedErrorState());
+  }
+}
+
+
+
+void removePetImage()
+        {
+          Image = null;
+          emit(RemovePetImageSuccessState());
+        }
+
+
+
+void uploadPetImage({
   @required String? petName,
   @required String? type,
   @required String? age,
-  String? petImage = 'https://img.freepik.com/free-photo/red-white-cat-i-white-studio_155003-13189.jpg?w=360&t=st=1668893476~exp=1668894076~hmac=0614695804a4245892816c0192e39a12abe9f97388f09f7b93fdcf7d72f6587f',
+  @required String? gender,
+  context
+})
+{
+  emit(AddPetDataLoadingState());
+  firebase_storage.FirebaseStorage.instance
+  .ref()
+  .child('pets/${Uri.file(Image!.path).pathSegments.last}')
+  .putFile(Image!).then((value) 
+  {
+    value.ref.getDownloadURL().then((value)
+    {
+      addPet(
+      age: age,
+      gender: gender,
+      petName: petName,
+      type: type,
+      ownerId: userModel!.uId,
+      petImage: value,
+    );
+    removePetImage();
+    pets = [];
+    getPets();
+    Navigator.pop(context);
+    }).catchError((error)
+    {
+      emit(AddPetDataErrorState(error.toString()));
+    });
+    
+  })
+  .catchError((error)
+  {
+    emit(AddPetDataErrorState(error.toString()));
+  });
+}
+
+
+
+
+
+
+
+  void addPet({
+  String? ownerId,
+  @required String? petName,
+  @required String? type,
+  @required String? age,
+  @required String? petImage,
   @required String? gender,
   })
   {

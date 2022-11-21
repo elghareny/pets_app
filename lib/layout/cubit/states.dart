@@ -39,3 +39,16 @@ class GetUserErrorState extends AppStates
   GetUserErrorState(this.error);
 }
 
+
+
+class RemovePetImageSuccessState extends AppStates{}
+
+
+class PetImagePickedSuccessState extends AppStates{}
+class PetImagePickedErrorState extends AppStates{}
+
+
+
+
+
+
