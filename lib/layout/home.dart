@@ -118,106 +118,112 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget petItem(PetsModel model) => Row(
-        children: [
-          Expanded(
-            child: Card(
-              clipBehavior: Clip.antiAliasWithSaveLayer,
-              margin: EdgeInsets.symmetric(horizontal: 0),
-              elevation: 10,
-              child: Container(
-                height: 230,
+  Widget petItem(PetsModel model) => InkWell(
+    onTap: ()
+    {
+      
+    },
+    child: Row(
+          children: [
+            Expanded(
+              child: Card(
                 clipBehavior: Clip.antiAliasWithSaveLayer,
-                decoration: BoxDecoration(
-                     color: defaultColor),
-                child: Image(
-                  fit: BoxFit.cover,
-                  image: NetworkImage(
-                    '${model.petImage}',
+                margin: EdgeInsets.symmetric(horizontal: 0),
+                elevation: 10,
+                child: Container(
+                  height: 230,
+                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                  decoration: BoxDecoration(
+                       color: defaultColor),
+                  child: Image(
+                    fit: BoxFit.cover,
+                    image: NetworkImage(
+                      '${model.petImage}',
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          Expanded(
-            child: Container(
-              height: 170,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                      bottomRight: Radius.circular(20),
-                      topRight: Radius.circular(20)),
-                  color: Colors.white),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              '${model.petName}',
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 20,
-                                  color: Colors.grey[700]),
+            Expanded(
+              child: Container(
+                height: 170,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                        bottomRight: Radius.circular(20),
+                        topRight: Radius.circular(20)),
+                    color: Colors.white),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                '${model.petName}',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 20,
+                                    color: Colors.grey[700]),
+                              ),
                             ),
-                          ),
-                          Icon(
-                            model.gender == 'male' ? Icons.male : Icons.female,
-                            color: Colors.grey[600],
-                            size: 35,
-                          )
-                        ],
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        '${model.type}',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 20,
-                            color: Colors.grey[700]),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text(
-                        '${model.age}',
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 16,
-                            color: Colors.grey[500]),
-                      ),
-                      // SizedBox(
-                      //   height: 10,
-                      // ),
-                      // Row(
-                      //   children: [
-                      //     Icon(
-                      //       Icons.location_on_rounded,
-                      //       color: defaultColor,
-                      //     ),
-                      //     SizedBox(
-                      //       width: 8,
-                      //     ),
-                      //     Text(
-                      //       'distance : ${model.distance}',
-                      //       style: TextStyle(
-                      //           fontWeight: FontWeight.w500,
-                      //           fontSize: 18,
-                      //           color: Colors.grey[500]),
-                      //     ),
-                      //   ],
-                      // ),
-                    ]),
+                            Icon(
+                              model.gender == 'male' ? Icons.male : Icons.female,
+                              color: Colors.grey[600],
+                              size: 35,
+                            )
+                          ],
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          '${model.type}',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 20,
+                              color: Colors.grey[700]),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          '${model.age}',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 16,
+                              color: Colors.grey[500]),
+                        ),
+                        // SizedBox(
+                        //   height: 10,
+                        // ),
+                        // Row(
+                        //   children: [
+                        //     Icon(
+                        //       Icons.location_on_rounded,
+                        //       color: defaultColor,
+                        //     ),
+                        //     SizedBox(
+                        //       width: 8,
+                        //     ),
+                        //     Text(
+                        //       'distance : ${model.distance}',
+                        //       style: TextStyle(
+                        //           fontWeight: FontWeight.w500,
+                        //           fontSize: 18,
+                        //           color: Colors.grey[500]),
+                        //     ),
+                        //   ],
+                        // ),
+                      ]),
+                ),
               ),
             ),
-          ),
-        ],
-      );
+          ],
+        ),
+  );
 
 
 
