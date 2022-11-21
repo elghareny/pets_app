@@ -35,7 +35,7 @@ void userLogin({
     emit(LoginSuccessState(value.user!.uid));
   }).catchError((error)
   {
-    emit(LoginErrorState(error));
+    emit(LoginErrorState(error.toString()));
   });
 }
 

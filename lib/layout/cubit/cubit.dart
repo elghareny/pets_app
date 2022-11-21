@@ -1,8 +1,12 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ecommerce_app/layout/cubit/states.dart';
 import 'package:ecommerce_app/layout/home.dart';
-import 'package:ecommerce_app/models/model.dart';
+import 'package:ecommerce_app/models/pet_model.dart';
+import 'package:ecommerce_app/models/user_model.dart';
 import 'package:ecommerce_app/modules/profile/profile.dart';
+import 'package:ecommerce_app/modules/register/cubit/states.dart';
+import 'package:ecommerce_app/shared/components/constant.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,51 +17,140 @@ class AppCubit extends Cubit<AppStates> {
   AppCubit() : super(InitialState());
   static AppCubit get(context) => BlocProvider.of(context);
 
-  List<PetsModel>petsList = 
-  [
-    PetsModel(
-      name: 'Sola', 
-      type: 'cat', 
-      age: '8 months', 
-      distance: '3.6 Km', 
-      gender: Icons.female,
-      image: 'https://img.freepik.com/free-photo/red-white-cat-i-white-studio_155003-13189.jpg?w=360&t=st=1668893476~exp=1668894076~hmac=0614695804a4245892816c0192e39a12abe9f97388f09f7b93fdcf7d72f6587f'),
-    PetsModel(
-      name: 'Lucky', 
-      type: 'dog', 
-      age: '10 months', 
-      distance: '2.2 Km', 
-      gender: Icons.female,
-      image: 'https://img.freepik.com/premium-photo/pomeranian-dog-cute-pet-happy-smile-playing-nature_106368-70.jpg?w=826'),
-    PetsModel(
-      name: 'Max', 
-      type: 'dog', 
-      age: '8 years', 
-      distance: '1.5 Km', 
-      gender: Icons.male,
-      image: 'https://img.freepik.com/free-photo/adorable-brown-white-basenji-dog-smiling-giving-high-five-isolated-white_346278-1657.jpg?w=826&t=st=1668893727~exp=1668894327~hmac=4805a7dc70f5f897e9d2613750e60bc6789adc9736e6c747140516fb59fe72b8'),
-    PetsModel(
-      name: 'Jinx', 
-      type: 'dog', 
-      age: '1 years', 
-      distance: '0.5 Km', 
-      gender: Icons.male,
-      image: 'https://img.freepik.com/premium-photo/pomeranian-spitz_1472-11020.jpg?w=826'),
-    PetsModel(
-      name: 'Chloe', 
-      type: 'cat', 
-      age: '2 years', 
-      distance: '6.6 Km',
-      gender: Icons.male, 
-      image: 'https://img.freepik.com/free-photo/grey-cat-lying-looking-up_176474-6827.jpg?w=826&t=st=1668893758~exp=1668894358~hmac=1631b3d970740191726902bca0329f5400dcebc511136880b279186168166b9c'),
-    PetsModel(
-      name: 'Cody', 
-      type: 'dog', 
-      age: '3 years', 
-      distance: '4.3 Km', 
-      gender: Icons.male,
-      image: 'https://img.freepik.com/free-photo/cute-puppy-maltipoo-dog-posing-isolated-white-background_155003-46004.jpg?w=826&t=st=1668893770~exp=1668894370~hmac=2d24574c9ae259d926a8b2d26b3fb4b2791e72111eaffcf2e3354c83fbb062c4'),
-  ];
+
+UserModel? userModel;
+
+PetsModel? petsModel;
+
+
+var gender = 0;
+
+void changegender(value)
+{
+  gender = value;
+  emit(ChoseGendarState());
+}
+
+
+
+
+  void getUser()
+  {
+    emit(GetUserLoadingState());
+    FirebaseFirestore.instance
+    .collection('users')
+    .doc(token)
+    .get()
+    .then((value) 
+    {
+      userModel = UserModel.fromjson(value.data()!);
+      emit(GetUserSuccessState());
+    })
+    .catchError((error)
+    {
+      emit(GetUserErrorState(error.toString()));
+    });
+  }
+
+
+
+  void addPet({
+  @required String? ownerId,
+  @required String? petName,
+  @required String? type,
+  @required String? age,
+  String? petImage = 'https://img.freepik.com/free-photo/red-white-cat-i-white-studio_155003-13189.jpg?w=360&t=st=1668893476~exp=1668894076~hmac=0614695804a4245892816c0192e39a12abe9f97388f09f7b93fdcf7d72f6587f',
+  @required String? gender,
+  })
+  {
+    emit(AddPetDataLoadingState());
+
+    PetsModel? petsModel = PetsModel(petName: petName, type: type, age: age, petImage: petImage, gender: gender,ownerId: userModel!.uId);
+
+    FirebaseFirestore.instance
+    .collection('pets')
+    .add(petsModel.toMap())
+    .then((value) 
+    {
+      emit(AddPetDataSuccessState());
+    })
+    .catchError((error)
+    {
+      emit(AddPetDataErrorState(error.toString()));
+    });
+  }
+
+
+List<PetsModel> pets = [];
+
+    void getPets()
+  {
+    emit(GetPetDataLoadingState());
+    FirebaseFirestore.instance
+    .collection('pets')
+    .get()
+    .then((value) 
+    {
+      value.docs.forEach((element) { 
+        pets.add(PetsModel.fromjson(element.data()));
+      });
+      emit(GetPetDataSuccessState());
+
+      print(pets[0].toMap());
+    })
+    .catchError((error)
+    {
+      emit(GetPetDataErrorState(error.toString()));
+    });
+  }
+
+
+
+  // List<PetsModel>petsList = 
+  // [
+  //   PetsModel(
+  //     name: 'Sola', 
+  //     type: 'cat', 
+  //     age: '8 months', 
+  //     distance: '3.6 Km', 
+  //     gender: Icons.female,
+  //     image: 'https://img.freepik.com/free-photo/red-white-cat-i-white-studio_155003-13189.jpg?w=360&t=st=1668893476~exp=1668894076~hmac=0614695804a4245892816c0192e39a12abe9f97388f09f7b93fdcf7d72f6587f'),
+  //   PetsModel(
+  //     name: 'Lucky', 
+  //     type: 'dog', 
+  //     age: '10 months', 
+  //     distance: '2.2 Km', 
+  //     gender: Icons.female,
+  //     image: 'https://img.freepik.com/premium-photo/pomeranian-dog-cute-pet-happy-smile-playing-nature_106368-70.jpg?w=826'),
+  //   PetsModel(
+  //     name: 'Max', 
+  //     type: 'dog', 
+  //     age: '8 years', 
+  //     distance: '1.5 Km', 
+  //     gender: Icons.male,
+  //     image: 'https://img.freepik.com/free-photo/adorable-brown-white-basenji-dog-smiling-giving-high-five-isolated-white_346278-1657.jpg?w=826&t=st=1668893727~exp=1668894327~hmac=4805a7dc70f5f897e9d2613750e60bc6789adc9736e6c747140516fb59fe72b8'),
+  //   PetsModel(
+  //     name: 'Jinx', 
+  //     type: 'dog', 
+  //     age: '1 years', 
+  //     distance: '0.5 Km', 
+  //     gender: Icons.male,
+  //     image: 'https://img.freepik.com/premium-photo/pomeranian-spitz_1472-11020.jpg?w=826'),
+  //   PetsModel(
+  //     name: 'Chloe', 
+  //     type: 'cat', 
+  //     age: '2 years', 
+  //     distance: '6.6 Km',
+  //     gender: Icons.male, 
+  //     image: 'https://img.freepik.com/free-photo/grey-cat-lying-looking-up_176474-6827.jpg?w=826&t=st=1668893758~exp=1668894358~hmac=1631b3d970740191726902bca0329f5400dcebc511136880b279186168166b9c'),
+  //   PetsModel(
+  //     name: 'Cody', 
+  //     type: 'dog', 
+  //     age: '3 years', 
+  //     distance: '4.3 Km', 
+  //     gender: Icons.male,
+  //     image: 'https://img.freepik.com/free-photo/cute-puppy-maltipoo-dog-posing-isolated-white-background_155003-46004.jpg?w=826&t=st=1668893770~exp=1668894370~hmac=2d24574c9ae259d926a8b2d26b3fb4b2791e72111eaffcf2e3354c83fbb062c4'),
+  // ];
 
 
 

@@ -1,3 +1,4 @@
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:ecommerce_app/layout/hidden_drawer_menu.dart';
 import 'package:ecommerce_app/modules/login/cubit/cubit.dart';
 import 'package:ecommerce_app/modules/login/cubit/states.dart';
@@ -27,7 +28,7 @@ class LoginScreen extends StatelessWidget {
           if(state is LoginSuccessState)
           {
             showToast('Login Success', ToastStates.SUCCESS);
-            // CacheHelper.saveData(key: 'uId', value: state.uId);
+            CacheHelper.saveData(key: 'uId', value: state.uId);
             navigatTo(context, HiddenDrawer());
           }  else if(state is LoginErrorState)
           showToast(state.error, ToastStates.ERROR);
@@ -126,19 +127,25 @@ class LoginScreen extends StatelessWidget {
                             }
                             ),
                             SizedBox(height: 20,),
-                            defaultButton(
-                              text: 'Sign in',
-                              height: 50,
-                              radius: 20,
-                              backcolor: defaultColor,
-                              function: ()
-                              {
-                                if(formKey.currentState!.validate())
+                            ConditionalBuilder(
+                              condition: state is !LoginLoadingState ,
+                              fallback: (context) => Center(child: CircularProgressIndicator(),),
+                              builder: (context) {
+                                return defaultButton(
+                                text: 'Sign in',
+                                height: 50,
+                                radius: 20,
+                                backcolor: defaultColor,
+                                function: ()
                                 {
-                                  cubit.userLogin(email: emailController.text, password: passwordController.text);
+                                  if(formKey.currentState!.validate())
+                                  {
+                                    cubit.userLogin(email: emailController.text, password: passwordController.text);
+                                  }
                                 }
-                              }
-                              
+                                
+                              );
+                              },
                             ),
                             SizedBox(height: 20,),
                             Row(

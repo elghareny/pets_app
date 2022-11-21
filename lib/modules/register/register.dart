@@ -1,3 +1,4 @@
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:ecommerce_app/layout/hidden_drawer_menu.dart';
 import 'package:ecommerce_app/modules/register/cubit/cubit.dart';
 import 'package:ecommerce_app/modules/register/cubit/states.dart';
@@ -167,23 +168,29 @@ class RegisterScreen extends StatelessWidget {
                             isPassword: true,
                             ),
                             SizedBox(height: 20,),
-                            defaultButton(
-                              text: 'Register',
-                              height: 50,
-                              radius: 20,
-                              backcolor: defaultColor,
-                              function: ()
-                              {
-                                if(formKey.currentState!.validate() && passwordController.text == confirmPasswordController.text)
+                            ConditionalBuilder(
+                              condition: state is !RegisterLoadingState,
+                              fallback: (context) => Center(child: CircularProgressIndicator()),
+                              builder: (context) {
+                                return defaultButton(
+                                text: 'Register',
+                                height: 50,
+                                radius: 20,
+                                backcolor: defaultColor,
+                                function: ()
                                 {
-                                  cubit.userRegister(
-                                    email: emailController.text, 
-                                    password: passwordController.text, 
-                                    name: nameController.text, phone: 
-                                    phoneController.text);
+                                  if(formKey.currentState!.validate() && passwordController.text == confirmPasswordController.text)
+                                  {
+                                    cubit.userRegister(
+                                      email: emailController.text, 
+                                      password: passwordController.text, 
+                                      name: nameController.text, phone: 
+                                      phoneController.text);
+                                  }
                                 }
-                              }
-                              
+                                
+                              );
+                              },
                             ),
                           ],
                         ),
