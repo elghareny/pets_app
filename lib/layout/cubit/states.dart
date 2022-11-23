@@ -47,6 +47,16 @@ class RemovePetImageSuccessState extends AppStates{}
 class PetImagePickedSuccessState extends AppStates{}
 class PetImagePickedErrorState extends AppStates{}
 
+class ProfileImagePickedSuccessState extends AppStates{}
+class ProfileImagePickedErrorState extends AppStates{}
+
+class RemoveProfileImageSuccessState extends AppStates{}
+
+
+class UpdateProfileUploadState extends AppStates{}
+class UpdateProfileSuccessState extends AppStates{}
+class UpdateProfileErrorState extends AppStates{}
+
 
 
 

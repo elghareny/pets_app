@@ -185,6 +185,94 @@ List<PetsModel> pets = [];
     });
   }
 
+//////////////////////////////////////////////////////////////////////////   update profile   ///////////////////////////
+
+File? imageProfile;
+ Future <void> pickprofile()async
+{
+  final PickedFile = await picker.pickImage(source: ImageSource.gallery);
+  if(PickedFile != null)
+  {
+    imageProfile = File(PickedFile.path);
+    emit(ProfileImagePickedSuccessState());
+  }else
+  {
+    print('no image selected');
+    emit(ProfileImagePickedErrorState());
+  }
+}
+
+void removeProfileImage()
+        {
+          imageProfile = null;
+          emit(RemoveProfileImageSuccessState());
+        }
+
+void uploadProfileImage({
+  @required String? name,
+  @required String? phone,
+  String? profileImage,
+})
+{
+  emit(UpdateProfileUploadState());
+  firebase_storage.FirebaseStorage.instance
+  .ref()
+  .child('profile/${Uri.file(imageProfile!.path).pathSegments.last}')
+  .putFile(imageProfile!)
+  .then((value)
+  {
+    value.ref.getDownloadURL().then((value) 
+    {
+      updateProfile(name: name, phone: phone, profileImage: value);
+      removeProfileImage();
+      getUser();
+    })
+    .catchError((error)
+    {
+      emit(UpdateProfileErrorState());
+    });
+  })
+  .catchError((error)
+  {
+    emit(UpdateProfileErrorState());
+  });
+}
+
+
+void updateProfile({
+  @required String? name,
+  @required String? phone,
+  String? profileImage,
+})
+{
+  emit(UpdateProfileUploadState());
+  UserModel model = UserModel(uId: userModel!.uId, name: name, phone: phone, email: userModel!.email, image: profileImage ?? userModel!.image);
+  FirebaseFirestore.instance
+  .collection('users')
+  .doc(userModel!.uId)
+  .set(model.toMap())
+  .then((value) 
+  {
+    emit(UpdateProfileSuccessState());
+    getUser();
+  })
+  .catchError((error)
+  {
+    emit(UpdateProfileErrorState());
+  });
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   // List<PetsModel>petsList = 
