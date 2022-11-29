@@ -2,7 +2,9 @@ import 'package:conditional_builder_null_safety/conditional_builder_null_safety.
 import 'package:ecommerce_app/layout/cubit/cubit.dart';
 import 'package:ecommerce_app/layout/cubit/states.dart';
 import 'package:ecommerce_app/models/pet_model.dart';
+import 'package:ecommerce_app/models/user_model.dart';
 import 'package:ecommerce_app/modules/add_pet/add_pet.dart';
+import 'package:ecommerce_app/modules/pet_details/pet_details.dart';
 import 'package:ecommerce_app/shared/components/components.dart';
 import 'package:ecommerce_app/shared/components/constant.dart';
 import 'package:flutter/material.dart';
@@ -95,7 +97,7 @@ class HomeScreen extends StatelessWidget {
                       physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
-                        return petItem(AppCubit.get(context).pets[index]);
+                        return petItem(AppCubit.get(context).pets[index],context);
                       }, 
                       separatorBuilder: (context, index) => SizedBox(height: 20,), 
                       itemCount: AppCubit.get(context).pets.length);
@@ -118,10 +120,10 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget petItem(PetsModel model) => InkWell(
+  Widget petItem(PetsModel model, context) => InkWell(
     onTap: ()
     {
-      
+      navigatTo(context, PetDetails(model: model,));
     },
     child: Row(
           children: [
