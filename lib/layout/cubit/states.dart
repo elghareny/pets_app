@@ -4,6 +4,10 @@ class InitialState extends AppStates{}
 
 class ChoseGendarState extends AppStates{}
 
+class ChoseTypeState extends AppStates{}
+
+class LogoutSuccessState extends AppStates{}
+
 class AddPetDataLoadingState extends AppStates{}
 class AddPetDataSuccessState extends AppStates
 {
@@ -26,6 +30,9 @@ class GetPetDataErrorState extends AppStates
   GetPetDataErrorState(this.error);
 }
 
+class ChangePetTypeSuccessState extends AppStates
+{
+}
 
 
 class GetUserLoadingState extends AppStates{}
@@ -59,6 +66,13 @@ class UpdateProfileErrorState extends AppStates{}
 
 
 
+class GetOwnerLoadingState extends AppStates{}
+class GetOwnerSuccessState extends AppStates
+{
+}
+class GetOwnerErrorState extends AppStates
+{
+  final String? error;
 
-
-
+  GetOwnerErrorState(this.error);
+}

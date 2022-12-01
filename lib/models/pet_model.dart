@@ -8,6 +8,9 @@ class PetsModel{
   // String? distance;
   String? petImage;
   String? gender;
+  String? description;
+  String? date;
+  String? petType;
 
   PetsModel
   ({
@@ -18,6 +21,9 @@ class PetsModel{
     // this.distance,
     required this.petImage,
     required this.gender,
+    required this.description,
+    required this.date,
+    required this.petType,
   });
 
   PetsModel.fromjson(Map<String, dynamic>json)
@@ -28,6 +34,9 @@ class PetsModel{
     age = json['age'];
     petImage = json['petImage'];
     gender = json['gender'];
+    description = json['description'];
+    date = json['date'];
+    petType = json['petType'];
   }
 
 
@@ -41,6 +50,9 @@ class PetsModel{
       'age' : age,
       'petImage' : petImage,
       'gender' : gender,
+      'description' : description,
+      'date' : date,
+      'petType' : petType,
     };
   }
 

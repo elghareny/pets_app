@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:ecommerce_app/layout/cubit/cubit.dart';
 import 'package:ecommerce_app/layout/cubit/states.dart';
@@ -13,13 +14,16 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+   HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AppCubit, AppStates>(
       listener: (context, state) {},
       builder: (context, state) {
+
+         int indexPet = AppCubit.get(context).indexPet;
+         
         return Scaffold(
           backgroundColor: Colors.grey[100],
           // appBar: AppBar(
@@ -76,31 +80,86 @@ class HomeScreen extends StatelessWidget {
                     height: 20,
                   ),
                 Container(
-                  height: 120,
+                  height: 110,
                   child: ListView.separated(
                     physics: BouncingScrollPhysics(),
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (context, index) {
-                      return categoryItem(AppCubit.get(context).catogeryList[index]);
+                      return categoryItem(AppCubit.get(context).catogeryList[index],context , index );
+                      // if(indexPet == 0)
+                      //   {
+                      //     categoryItem(AppCubit.get(context).catogeryList[indexPet],context , index , 20 , defaultColor , 75);
+                      //     return categoryItem(AppCubit.get(context).catogeryList[index],context , index , 16 , Colors.grey[700] , 70);
+                      //   }else if (indexPet == 1)
+                      //   {
+                      //     return categoryItem(AppCubit.get(context).catogeryList[index],context , index , 20 , defaultColor , 75);
+                      //   }
+                      //   else if (indexPet == 2)
+                      //   {
+                      //     return categoryItem(AppCubit.get(context).catogeryList[index],context , index , 20 , defaultColor , 75);
+                      //   }
+                        
+                      //   else if (indexPet == 3)
+                      //   {
+                      //     return categoryItem(AppCubit.get(context).catogeryList[index],context , index , 20 , defaultColor , 75);
+                      //   }
+                      //   else if (indexPet == 4)
+                      //   {
+                      //     return categoryItem(AppCubit.get(context).catogeryList[index],context , index , 20 , defaultColor , 75);
+                      //   }
+                      //   else
+                      //   {
+                      //     return categoryItem(AppCubit.get(context).catogeryList[index],context , index , 16 , Colors.grey[700] , 70);
+                      //   }
+                      
                     }, 
-                    separatorBuilder: (context, index) => SizedBox(width: 20,), 
+                    separatorBuilder: (context, index) => SizedBox(width: 25,), 
                     itemCount: AppCubit.get(context).catogeryList.length),
                 ),
                   SizedBox(
                     height: 20,
                   ),
                   ConditionalBuilder(
-                    condition: AppCubit.get(context).pets.length > 0,
+                    condition: 
+                    indexPet == 0 ? AppCubit.get(context).dogs.length > 0 : indexPet == 1 ? AppCubit.get(context).cats.length > 0 :
+                     indexPet == 2 ? AppCubit.get(context).rabbits.length > 0 : indexPet == 3 ? AppCubit.get(context).fish.length > 0 :
+                     indexPet == 4 ? AppCubit.get(context).birds.length > 0 : AppCubit.get(context).pets.length > 0,
+                    // AppCubit.get(context).pets.length > 0,
                     fallback: (context) => Center(child: CircularProgressIndicator()),
                     builder: (context) {
                       return ListView.separated(
                       physics: NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
-                        return petItem(AppCubit.get(context).pets[index],context);
+                        // return petItem(AppCubit.get(context).pets[index],context,);
+                        if(indexPet == 0)
+                        {
+                          return petItem(AppCubit.get(context).dogs[index],context,);
+                        }else if (indexPet == 1)
+                        {
+                          return petItem(AppCubit.get(context).cats[index],context,);
+                        }
+                        else if (indexPet == 2)
+                        {
+                          return petItem(AppCubit.get(context).rabbits[index],context,);
+                        }
+                        
+                        else if (indexPet == 3)
+                        {
+                          return petItem(AppCubit.get(context).fish[index],context,);
+                        }
+                        else
+                        {
+                          return petItem(AppCubit.get(context).birds[index],context,);
+                        }
                       }, 
-                      separatorBuilder: (context, index) => SizedBox(height: 20,), 
-                      itemCount: AppCubit.get(context).pets.length);
+                      separatorBuilder: (context, index) => SizedBox(height: 10,), 
+                      itemCount: 
+                     indexPet == 0 ? AppCubit.get(context).dogs.length : indexPet == 1 ? AppCubit.get(context).cats.length :
+                     indexPet == 2 ? AppCubit.get(context).rabbits.length : indexPet == 3 ? AppCubit.get(context).fish.length :
+                     indexPet == 4 ? AppCubit.get(context).birds.length : 0
+                      // AppCubit.get(context).pets.length
+                      );
                     },
                   )
                 ],
@@ -122,8 +181,21 @@ class HomeScreen extends StatelessWidget {
 
   Widget petItem(PetsModel model, context) => InkWell(
     onTap: ()
+    {      
+    FirebaseFirestore.instance
+    .collection('users')
+    .doc(model.ownerId)
+    .get()
+    .then((value) 
     {
-      navigatTo(context, PetDetails(model: model,));
+      AppCubit.get(context).ownerModel = UserModel.fromjson(value.data()!);
+      navigatTo(context, PetDetails(model: model,ownerModel: AppCubit.get(context).ownerModel,));
+    })
+    .catchError((error)
+    {
+    });
+      
+      
     },
     child: Row(
           children: [
@@ -133,7 +205,7 @@ class HomeScreen extends StatelessWidget {
                 margin: EdgeInsets.symmetric(horizontal: 0),
                 elevation: 10,
                 child: Container(
-                  height: 230,
+                  height: 150,
                   clipBehavior: Clip.antiAliasWithSaveLayer,
                   decoration: BoxDecoration(
                        color: defaultColor),
@@ -148,11 +220,17 @@ class HomeScreen extends StatelessWidget {
             ),
             Expanded(
               child: Container(
-                height: 170,
+                height: 110,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.only(
                         bottomRight: Radius.circular(20),
                         topRight: Radius.circular(20)),
+                        boxShadow: [
+                          BoxShadow(
+                            blurRadius: 5,
+                            color: Colors.grey
+                          )
+                        ],
                     color: Colors.white),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -167,19 +245,19 @@ class HomeScreen extends StatelessWidget {
                                 '${model.petName}',
                                 style: TextStyle(
                                     fontWeight: FontWeight.w500,
-                                    fontSize: 20,
+                                    fontSize: 22,
                                     color: Colors.grey[700]),
                               ),
                             ),
                             Icon(
                               model.gender == 'male' ? Icons.male : Icons.female,
                               color: Colors.grey[600],
-                              size: 35,
+                              size: 25,
                             )
                           ],
                         ),
                         SizedBox(
-                          height: 10,
+                          height: 5,
                         ),
                         Text(
                           '${model.type}',
@@ -231,34 +309,42 @@ class HomeScreen extends StatelessWidget {
 
 
 
-      Widget categoryItem(CatogeryModel model) => Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20)),
-                          child: Center(
-                            child: Image(
-                                width: 50,
-                                height: 50,
-                                image: NetworkImage(
-                                  '${model.image}',
-                                )),
+      Widget categoryItem(CatogeryModel model,context ,  index ,) => InkWell(
+        onTap: ()
+        {
+          AppCubit.get(context).changeType(index);
+        },
+        child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            clipBehavior: Clip.antiAliasWithSaveLayer,
+                            width: index == AppCubit.get(context).indexPet ? 75 : 70,
+                            height: index == AppCubit.get(context).indexPet ? 75 : 70,
+                            decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(20)),
+                            child: Center(
+                              child: Image(
+                                fit: BoxFit.cover,
+                                  width: index == AppCubit.get(context).indexPet ? 75 : 70,
+                                  height: index == AppCubit.get(context).indexPet ? 75 : 70,
+                                  image: NetworkImage(
+                                    '${model.image}',
+                                  )),
+                            ),
                           ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          '${model.name}',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 18,
-                              color: Colors.grey[700]),
-                        )
-                      ],
-                    );
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            '${model.name}',
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: index == AppCubit.get(context).indexPet ? 20 : 16,
+                                color: index == AppCubit.get(context).indexPet ?defaultColor : Colors.grey[700]),
+                          )
+                        ],
+                      ),
+      );
 }

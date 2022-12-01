@@ -1,4 +1,6 @@
 
+import 'dart:ffi';
+
 import 'package:ecommerce_app/layout/cubit/cubit.dart';
 import 'package:ecommerce_app/layout/cubit/states.dart';
 import 'package:ecommerce_app/shared/components/components.dart';
@@ -14,7 +16,7 @@ class AddPet extends StatelessWidget {
   var petNameController = TextEditingController();
   var typeController = TextEditingController();
   var ageController = TextEditingController();
-  var genderController = TextEditingController();
+  var descriptionController = TextEditingController();
   
 
 
@@ -35,6 +37,8 @@ class AddPet extends StatelessWidget {
         var choseGender = cubit.gender;
 
         String? gender;
+
+        
         
         return Scaffold(
           backgroundColor: Colors.grey[100],
@@ -58,7 +62,9 @@ class AddPet extends StatelessWidget {
                     age: ageController.text,
                     petName: petNameController.text,
                     type: typeController.text,
+                    description: descriptionController.text,
                     gender: choseGender == 0 ? gender ='male' : gender = 'female',
+                    petType: cubit.dropdownvalue,
                   );
                 }
               }, 
@@ -105,7 +111,7 @@ class AddPet extends StatelessWidget {
                     },
                     text: 'Name',
                     prefixIcon: Icons.abc),
-                SizedBox(
+                  SizedBox(
                   height: 20,
                 ),
                 textField(
@@ -131,6 +137,64 @@ class AddPet extends StatelessWidget {
                     },
                     text: 'Age',
                     prefixIcon: Icons.numbers),
+                SizedBox(
+                  height: 20,
+                ),
+                textField(
+                    controller: descriptionController,
+                    validate: (value) {
+                      if (value!.isEmpty) {
+                        return 'Description not be empty';
+                      }
+                      return null;
+                    },
+                    text: 'Description',
+                    prefixIcon: Icons.description),
+                    SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  decoration: BoxDecoration(
+                      color: defaultColor,
+                      borderRadius: BorderRadius.all(Radius.circular(20))
+                    ),
+                  padding: EdgeInsets.all(1),
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    width: double.infinity,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.all(Radius.circular(20))
+                    ),
+                    child: Center(
+                      child: DropdownButton(
+                        icon: const Icon(Icons.keyboard_arrow_down),   
+                        underline: Container(
+                          height: 0,
+                        ),
+                        isExpanded: true,
+                        borderRadius: BorderRadius.circular(20),
+                        dropdownColor: Colors.grey[300],
+                        style: TextStyle(
+                          color: defaultColor,
+                          fontSize: 22,
+                        ),
+                        hint: Text('Select Pet Type'),
+                        value: cubit.dropdownvalue,
+                        items: cubit.typeList.map((String typeList) {
+                      return DropdownMenuItem(
+                        value: typeList,
+                        child: Text(typeList),
+                        );}).toList(), 
+                        onChanged: (newValue)
+                        {
+                          cubit.selectType(newValue);
+                        }
+                        ),
+                    ),
+                  ),
+                ),
                 SizedBox(
                   height: 20,
                 ),

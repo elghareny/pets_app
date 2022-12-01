@@ -1,4 +1,5 @@
 
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,6 +10,8 @@ import 'package:ecommerce_app/models/user_model.dart';
 import 'package:ecommerce_app/modules/profile/profile.dart';
 import 'package:ecommerce_app/modules/register/cubit/states.dart';
 import 'package:ecommerce_app/shared/components/constant.dart';
+import 'package:ecommerce_app/shared/network/local/cacheHelper.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart'as firebase_storage;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +27,8 @@ class AppCubit extends Cubit<AppStates> {
 
 UserModel? userModel;
 
+UserModel? ownerModel;
+
 PetsModel? petsModel;
 
 
@@ -33,6 +38,31 @@ void changegender(value)
 {
   gender = value;
   emit(ChoseGendarState());
+}
+
+var typeList = ['Cat','Dog','Bird','Fish'];
+
+var dropdownvalue ;
+
+void selectType(newValue)
+{
+  dropdownvalue = newValue!;
+  emit(ChoseTypeState());
+}
+
+
+void logout ()
+{
+  FirebaseAuth.instance.signOut()
+  .then((value) 
+  {
+    CacheHelper.removeData(key: 'uId');
+    emit(LogoutSuccessState());
+  })
+  .catchError((error)
+  {
+
+  });
 }
 
 
@@ -94,6 +124,8 @@ void uploadPetImage({
   @required String? type,
   @required String? age,
   @required String? gender,
+  @required String? description,
+  @required String? petType,
   context
 })
 {
@@ -112,10 +144,13 @@ void uploadPetImage({
       type: type,
       ownerId: userModel!.uId,
       petImage: value,
+      description: description,
+      petType: petType
     );
     removePetImage();
     pets = [];
     getPets();
+    dropdownvalue = null;
     Navigator.pop(context);
     }).catchError((error)
     {
@@ -142,11 +177,23 @@ void uploadPetImage({
   @required String? age,
   @required String? petImage,
   @required String? gender,
+  @required String? description,
+  @required String? petType,
   })
   {
     emit(AddPetDataLoadingState());
 
-    PetsModel? petsModel = PetsModel(petName: petName, type: type, age: age, petImage: petImage, gender: gender,ownerId: userModel!.uId);
+    PetsModel? petsModel = PetsModel(
+      petName: petName, 
+      type: type, 
+      age: age, 
+      petImage: petImage, 
+      gender: gender,
+      ownerId: userModel!.uId,
+      description: description,
+      date: DateTime.now().toString(),
+      petType: petType
+      );
 
     FirebaseFirestore.instance
     .collection('pets')
@@ -164,6 +211,16 @@ void uploadPetImage({
 
 List<PetsModel> pets = [];
 
+
+List<PetsModel> dogs = [];
+List<PetsModel> cats = [];
+List<PetsModel> rabbits= [];
+List<PetsModel> fish= [];
+List<PetsModel> birds= [];
+
+  int indexPet = 0;
+
+
     void getPets()
   {
     emit(GetPetDataLoadingState());
@@ -174,16 +231,52 @@ List<PetsModel> pets = [];
     {
       value.docs.forEach((element) { 
         pets.add(PetsModel.fromjson(element.data()));
+        if(PetsModel.fromjson(element.data()).petType == 'Dog')
+      {
+        dogs.add(PetsModel.fromjson(element.data()));
+      }else if(PetsModel.fromjson(element.data()).petType == 'Cat')
+        {
+        cats.add(PetsModel.fromjson(element.data()));
+        }
+      else if(PetsModel.fromjson(element.data()).petType == 'Rabbit')
+        {
+        rabbits.add(PetsModel.fromjson(element.data()));
+        }
+      else if(PetsModel.fromjson(element.data()).petType == 'Fish')
+        {
+        fish.add(PetsModel.fromjson(element.data()));
+        }
+      else if(PetsModel.fromjson(element.data()).petType == 'Bird')
+        {
+        birds.add(PetsModel.fromjson(element.data()));
+        }
       });
+      print("Cats : ${cats.length}");
       emit(GetPetDataSuccessState());
 
-      print(pets[0].toMap());
+      getOwner(petsModel!.ownerId);
+
     })
     .catchError((error)
     {
       emit(GetPetDataErrorState(error.toString()));
     });
   }
+
+
+  void changeType(index)
+  {
+    indexPet = index;
+pets = [];
+dogs = [];
+cats = [];
+rabbits= [];
+fish= [];
+birds= [];
+    getPets();
+    emit(ChangePetTypeSuccessState());
+  }
+
 
 //////////////////////////////////////////////////////////////////////////   update profile   ///////////////////////////
 
@@ -263,12 +356,26 @@ void updateProfile({
 }
 
 
+///////////////////////////////////////////////////////////////////////////////////////////////   owner     /////////////  
 
 
-
-
-
-
+void getOwner(String? ownerId)
+  {
+    emit(GetOwnerLoadingState());
+    FirebaseFirestore.instance
+    .collection('users')
+    .doc(ownerId)
+    .get()
+    .then((value) 
+    {
+      ownerModel = UserModel.fromjson(value.data()!);
+      emit(GetOwnerSuccessState());
+    })
+    .catchError((error)
+    {
+      emit(GetOwnerErrorState(error.toString()));
+    });
+  }
 
 
 
@@ -333,18 +440,18 @@ void updateProfile({
   [
     CatogeryModel(
       name: 'Dogs', 
-      image: 'https://cdn-icons-png.flaticon.com/512/1247/1247352.png?w=740&t=st=1668897685~exp=1668898285~hmac=38b938a63e762a9ba861847bdfeba48326f2589087a7f13379ec1291f7c94d5d'),
+      image: 'https://img.freepik.com/free-photo/portrait-funny-little-dog_23-2148366899.jpg?w=740&t=st=1669876720~exp=1669877320~hmac=4d5e8673040e5e90393196726399216b4fd051263d49c97e8d98cfcc792ccc19'),
     CatogeryModel(
       name: 'Cats', 
-      image: 'https://cdn-icons-png.flaticon.com/512/1152/1152454.png?w=740&t=st=1668897686~exp=1668898286~hmac=8d48301d1906be1faacce5c19dd85ce71c1ad55b93dcbd4e7a23851816bf183d'),
+      image: 'https://img.freepik.com/premium-photo/studio-portrait-beautiful-grey-cat-dark-background-pet-mammal-animal-predator_158518-3811.jpg'),
     CatogeryModel(
       name: 'Rabbits', 
-      image: 'https://cdn-icons-png.flaticon.com/512/1255/1255053.png?w=740&t=st=1668897699~exp=1668898299~hmac=7422efe74080d51ec84c879eb95d2781cdd605e29a2cd53f1a31eb0fdf7fabf6'),
+      image: 'https://img.freepik.com/premium-photo/white-rabit-closeup-head-red-background_188878-595.jpg?w=826'),
     CatogeryModel(
       name: 'Fish', 
-      image: 'https://cdn-icons-png.flaticon.com/512/1226/1226789.png?w=740&t=st=1668897743~exp=1668898343~hmac=542c137e3265fd8ae50878f4187671f859bd34fe8983ba0793ca4ba722a7e3f8'),
+      image: 'https://img.freepik.com/free-photo/dumpy-frog-litoria-caerulea-green-leaves-dumpy-frog-branch-tree-frog-branch_488145-3603.jpg?w=740&t=st=1669877682~exp=1669878282~hmac=dd2d185e5c60aacc4e81a0983dc0aa9f329c647987516120817e87528f867eaf'),
     CatogeryModel(
       name: 'Birds', 
-      image: 'https://cdn-icons-png.flaticon.com/512/1230/1230839.png?w=740&t=st=1668897780~exp=1668898380~hmac=48b6a67c9d26732360818c94b9ec001ddf99451d5cbc722a4935800642cf3ba8'),
+      image: 'https://img.freepik.com/free-photo/white-bird-flying-sea_181624-36686.jpg?w=900&t=st=1669877236~exp=1669877836~hmac=4274a3929b49604f526ddd4ba04d2410ce34648529f7404de3ca3af10ff3b7ea'),
   ];
 }
