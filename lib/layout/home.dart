@@ -85,33 +85,7 @@ class HomeScreen extends StatelessWidget {
                     physics: BouncingScrollPhysics(),
                     scrollDirection: Axis.horizontal,
                     itemBuilder: (context, index) {
-                      return categoryItem(AppCubit.get(context).catogeryList[index],context , index );
-                      // if(indexPet == 0)
-                      //   {
-                      //     categoryItem(AppCubit.get(context).catogeryList[indexPet],context , index , 20 , defaultColor , 75);
-                      //     return categoryItem(AppCubit.get(context).catogeryList[index],context , index , 16 , Colors.grey[700] , 70);
-                      //   }else if (indexPet == 1)
-                      //   {
-                      //     return categoryItem(AppCubit.get(context).catogeryList[index],context , index , 20 , defaultColor , 75);
-                      //   }
-                      //   else if (indexPet == 2)
-                      //   {
-                      //     return categoryItem(AppCubit.get(context).catogeryList[index],context , index , 20 , defaultColor , 75);
-                      //   }
-                        
-                      //   else if (indexPet == 3)
-                      //   {
-                      //     return categoryItem(AppCubit.get(context).catogeryList[index],context , index , 20 , defaultColor , 75);
-                      //   }
-                      //   else if (indexPet == 4)
-                      //   {
-                      //     return categoryItem(AppCubit.get(context).catogeryList[index],context , index , 20 , defaultColor , 75);
-                      //   }
-                      //   else
-                      //   {
-                      //     return categoryItem(AppCubit.get(context).catogeryList[index],context , index , 16 , Colors.grey[700] , 70);
-                      //   }
-                      
+                      return categoryItem(AppCubit.get(context).catogeryList[index],context , index );   
                     }, 
                     separatorBuilder: (context, index) => SizedBox(width: 25,), 
                     itemCount: AppCubit.get(context).catogeryList.length),
