@@ -20,6 +20,9 @@ import 'package:hidden_drawer_menu/hidden_drawer_menu.dart';
 import 'package:hidden_drawer_menu/model/screen_hidden_drawer.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../modules/pet_details/pet_details.dart';
+import '../../shared/components/components.dart';
+
 class AppCubit extends Cubit<AppStates> {
   AppCubit() : super(InitialState());
   static AppCubit get(context) => BlocProvider.of(context);
@@ -148,9 +151,14 @@ void uploadPetImage({
       petType: petType
     );
     removePetImage();
-    pets = [];
-    getPets();
-    dropdownvalue = null;
+    // pets = [];
+    // dogs = [];
+    // cats = [];
+    // rabbits= [];
+    // fish= [];
+    // birds= [];
+    // getPets();
+    dropdownvalue = '';
     Navigator.pop(context);
     }).catchError((error)
     {
@@ -231,22 +239,22 @@ List<PetsModel> birds= [];
     {
       value.docs.forEach((element) { 
         pets.add(PetsModel.fromjson(element.data()));
-        if(PetsModel.fromjson(element.data()).petType == 'Dog')
+        if(PetsModel.fromjson(element.data()).petType == 'Dog' && PetsModel.fromjson(element.data()).ownerId != userModel!.uId)
       {
         dogs.add(PetsModel.fromjson(element.data()));
-      }else if(PetsModel.fromjson(element.data()).petType == 'Cat')
+      }else if(PetsModel.fromjson(element.data()).petType == 'Cat' && PetsModel.fromjson(element.data()).ownerId != userModel!.uId)
         {
         cats.add(PetsModel.fromjson(element.data()));
         }
-      else if(PetsModel.fromjson(element.data()).petType == 'Rabbit')
+      else if(PetsModel.fromjson(element.data()).petType == 'Rabbit' && PetsModel.fromjson(element.data()).ownerId != userModel!.uId)
         {
         rabbits.add(PetsModel.fromjson(element.data()));
         }
-      else if(PetsModel.fromjson(element.data()).petType == 'Fish')
+      else if(PetsModel.fromjson(element.data()).petType == 'Fish' && PetsModel.fromjson(element.data()).ownerId != userModel!.uId)
         {
         fish.add(PetsModel.fromjson(element.data()));
         }
-      else if(PetsModel.fromjson(element.data()).petType == 'Bird')
+      else if(PetsModel.fromjson(element.data()).petType == 'Bird' && PetsModel.fromjson(element.data()).ownerId != userModel!.uId)
         {
         birds.add(PetsModel.fromjson(element.data()));
         }
@@ -267,13 +275,6 @@ List<PetsModel> birds= [];
   void changeType(index)
   {
     indexPet = index;
-pets = [];
-dogs = [];
-cats = [];
-rabbits= [];
-fish= [];
-birds= [];
-    getPets();
     emit(ChangePetTypeSuccessState());
   }
 
@@ -374,6 +375,24 @@ void getOwner(String? ownerId)
     .catchError((error)
     {
       emit(GetOwnerErrorState(error.toString()));
+    });
+  }
+
+
+
+  void itemDetails({PetsModel? model,context})
+  {
+    FirebaseFirestore.instance
+    .collection('users')
+    .doc(model!.ownerId)
+    .get()
+    .then((value) 
+    {
+      AppCubit.get(context).ownerModel = UserModel.fromjson(value.data()!);
+      navigatTo(context, PetDetails(model: model,ownerModel: ownerModel,));
+    })
+    .catchError((error)
+    {
     });
   }
 

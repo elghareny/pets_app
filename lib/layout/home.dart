@@ -58,57 +58,56 @@ class HomeScreen extends StatelessWidget {
           // ),
           body: Padding(
             padding: const EdgeInsets.all(20.0),
-            child: SingleChildScrollView(
-              physics: BouncingScrollPhysics(),
-              child: Column(
-                children: [
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.white,
-                    ),
-                    child: TextFormField(
-                      decoration: InputDecoration(
-                          prefixIcon: Icon(Icons.search),
-                          border: InputBorder.none,
-                          hintText: 'Search'),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
+            child: Column(
+              children: [
                 Container(
-                  height: 110,
-                  child: ListView.separated(
-                    physics: BouncingScrollPhysics(),
-                    scrollDirection: Axis.horizontal,
-                    itemBuilder: (context, index) {
-                      return categoryItem(AppCubit.get(context).catogeryList[index],context , index );   
-                    }, 
-                    separatorBuilder: (context, index) => SizedBox(width: 25,), 
-                    itemCount: AppCubit.get(context).catogeryList.length),
-                ),
-                  SizedBox(
-                    height: 20,
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.white,
                   ),
-                  ConditionalBuilder(
-                    condition: 
-                    indexPet == 0 ? AppCubit.get(context).dogs.length > 0 : indexPet == 1 ? AppCubit.get(context).cats.length > 0 :
-                     indexPet == 2 ? AppCubit.get(context).rabbits.length > 0 : indexPet == 3 ? AppCubit.get(context).fish.length > 0 :
-                     indexPet == 4 ? AppCubit.get(context).birds.length > 0 : AppCubit.get(context).pets.length > 0,
-                    // AppCubit.get(context).pets.length > 0,
-                    fallback: (context) => Center(child: CircularProgressIndicator()),
-                    builder: (context) {
-                      return ListView.separated(
-                      physics: NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.search),
+                        border: InputBorder.none,
+                        hintText: 'Search'),
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+              Container(
+                height: 110,
+                child: ListView.separated(
+                  physics: BouncingScrollPhysics(),
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (context, index) {
+                    return categoryItem(AppCubit.get(context).catogeryList[index],context , index );   
+                  }, 
+                  separatorBuilder: (context, index) => SizedBox(width: 25,), 
+                  itemCount: AppCubit.get(context).catogeryList.length),
+              ),
+                SizedBox(
+                  height: 20,
+                ),
+                ConditionalBuilder(
+                  condition: 
+                  indexPet == 0 ? AppCubit.get(context).dogs.length > 0 : indexPet == 1 ? AppCubit.get(context).cats.length > 0 :
+                   indexPet == 2 ? AppCubit.get(context).rabbits.length > 0 : indexPet == 3 ? AppCubit.get(context).fish.length > 0 :
+                   indexPet == 4 ? AppCubit.get(context).birds.length > 0 : AppCubit.get(context).pets.length > 0,
+                  // AppCubit.get(context).pets.length > 0,
+                  fallback: (context) => Center(child: CircularProgressIndicator()),
+                  builder: (context) {
+                    return Expanded(
+                      child: ListView.separated(
+                      physics: BouncingScrollPhysics(),
                       itemBuilder: (context, index) {
                         // return petItem(AppCubit.get(context).pets[index],context,);
                         if(indexPet == 0)
                         {
                           return petItem(AppCubit.get(context).dogs[index],context,);
+                          
                         }else if (indexPet == 1)
                         {
                           return petItem(AppCubit.get(context).cats[index],context,);
@@ -129,15 +128,15 @@ class HomeScreen extends StatelessWidget {
                       }, 
                       separatorBuilder: (context, index) => SizedBox(height: 10,), 
                       itemCount: 
-                     indexPet == 0 ? AppCubit.get(context).dogs.length : indexPet == 1 ? AppCubit.get(context).cats.length :
-                     indexPet == 2 ? AppCubit.get(context).rabbits.length : indexPet == 3 ? AppCubit.get(context).fish.length :
-                     indexPet == 4 ? AppCubit.get(context).birds.length : 0
+                                       indexPet == 0 ? AppCubit.get(context).dogs.length : indexPet == 1 ? AppCubit.get(context).cats.length :
+                                       indexPet == 2 ? AppCubit.get(context).rabbits.length : indexPet == 3 ? AppCubit.get(context).fish.length :
+                                       indexPet == 4 ? AppCubit.get(context).birds.length : 0
                       // AppCubit.get(context).pets.length
-                      );
-                    },
-                  )
-                ],
-              ),
+                      ),
+                    );
+                  },
+                )
+              ],
             ),
           ),
           floatingActionButton: FloatingActionButton(
@@ -156,19 +155,8 @@ class HomeScreen extends StatelessWidget {
   Widget petItem(PetsModel model, context) => InkWell(
     onTap: ()
     {      
-    FirebaseFirestore.instance
-    .collection('users')
-    .doc(model.ownerId)
-    .get()
-    .then((value) 
-    {
-      AppCubit.get(context).ownerModel = UserModel.fromjson(value.data()!);
-      navigatTo(context, PetDetails(model: model,ownerModel: AppCubit.get(context).ownerModel,));
-    })
-    .catchError((error)
-    {
-    });
-      
+    
+      AppCubit.get(context).itemDetails(context: context , model: model);
       
     },
     child: Row(
