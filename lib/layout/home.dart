@@ -1,17 +1,15 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:ecommerce_app/layout/cubit/cubit.dart';
 import 'package:ecommerce_app/layout/cubit/states.dart';
-import 'package:ecommerce_app/models/pet_model.dart';
-import 'package:ecommerce_app/models/user_model.dart';
 import 'package:ecommerce_app/modules/add_pet/add_pet.dart';
-import 'package:ecommerce_app/modules/pet_details/pet_details.dart';
+import 'package:ecommerce_app/modules/map/location_pet.dart';
+import 'package:ecommerce_app/shared/components/category_item.dart';
 import 'package:ecommerce_app/shared/components/components.dart';
 import 'package:ecommerce_app/shared/components/constant.dart';
+import 'package:ecommerce_app/shared/components/pet_item.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 class HomeScreen extends StatelessWidget {
    HomeScreen({super.key});
@@ -83,7 +81,16 @@ class HomeScreen extends StatelessWidget {
                   physics: BouncingScrollPhysics(),
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (context, index) {
-                    return categoryItem(AppCubit.get(context).catogeryList[index],context , index );   
+                    return CategoryItem(
+                      context: context,
+                      index: index,
+                      indexPet: indexPet,
+                      model: AppCubit.get(context).catogeryList[index],
+                      onTap:  ()
+                      {
+                         AppCubit.get(context).changeType(index);
+                      },
+                      );   
                   }, 
                   separatorBuilder: (context, index) => SizedBox(width: 25,), 
                   itemCount: AppCubit.get(context).catogeryList.length),
@@ -106,24 +113,59 @@ class HomeScreen extends StatelessWidget {
                         // return petItem(AppCubit.get(context).pets[index],context,);
                         if(indexPet == 0)
                         {
-                          return petItem(AppCubit.get(context).dogs[index],context,);
+                          return PetItem(
+                            context: context,
+                            model: AppCubit.get(context).dogs[index],
+                            onTap: ()
+                            {
+                              AppCubit.get(context).itemDetails(context: context , model: AppCubit.get(context).dogs[index]);
+                            },
+                            );
                           
                         }else if (indexPet == 1)
                         {
-                          return petItem(AppCubit.get(context).cats[index],context,);
+                          return PetItem(
+                            context: context,
+                            model: AppCubit.get(context).cats[index],
+                            onTap: ()
+                            {
+                              AppCubit.get(context).itemDetails(context: context , model: AppCubit.get(context).cats[index]);
+                            },
+                            );
                         }
                         else if (indexPet == 2)
                         {
-                          return petItem(AppCubit.get(context).rabbits[index],context,);
+                          return PetItem(
+                            context: context,
+                            model: AppCubit.get(context).rabbits[index],
+                            onTap: ()
+                            {
+                              AppCubit.get(context).itemDetails(context: context , model: AppCubit.get(context).rabbits[index]);
+                            },
+                            );
                         }
                         
                         else if (indexPet == 3)
                         {
-                          return petItem(AppCubit.get(context).fish[index],context,);
+                          return PetItem(
+                            context: context,
+                            model: AppCubit.get(context).fish[index],
+                            onTap: ()
+                            {
+                              AppCubit.get(context).itemDetails(context: context , model: AppCubit.get(context).fish[index]);
+                            },
+                            );
                         }
                         else
                         {
-                          return petItem(AppCubit.get(context).birds[index],context,);
+                          return PetItem(
+                            context: context,
+                            model: AppCubit.get(context).birds[index],
+                            onTap: ()
+                            {
+                              AppCubit.get(context).itemDetails(context: context , model: AppCubit.get(context).birds[index]);
+                            },
+                            );
                         }
                       }, 
                       separatorBuilder: (context, index) => SizedBox(height: 10,), 
@@ -139,174 +181,207 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
           ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: ()
-            {
-              navigatTo(context, AddPet());
-            },
+          floatingActionButton: SpeedDial(
+            animatedIcon: AnimatedIcons.menu_close,
             backgroundColor: defaultColor,
-            child: Icon(Icons.post_add_outlined),
+            overlayColor: Colors.grey,
+            overlayOpacity: .1,
+            spacing: 5,
+            buttonSize: Size(65,65),
+            childrenButtonSize: Size(65,65),
+            children: [
+              SpeedDialChild(
+                child: Icon(Icons.post_add_outlined,color: Colors.white,),
+                backgroundColor: defaultColor,
+                label: 'Add Pet',
+                labelStyle: TextStyle(
+                  fontSize: 14
+                ),
+                onTap: (){
+                  navigatTo(context, AddPet());
+                }
+              ),
+              SpeedDialChild(
+                child: Icon(Icons.location_on_rounded, color: Colors.white,),
+                backgroundColor: defaultColor,
+                label: 'Location Pet',
+                labelStyle: TextStyle(
+                  fontSize: 14
+                ),
+                onTap: (){
+                  navigatTo(context, LocationPet());
+                }
+              ),
+            ],
           ),
+          // FloatingActionButton(
+          //   onPressed: ()
+          //   {
+          //     navigatTo(context, AddPet());
+          //   },
+          //   backgroundColor: defaultColor,
+          //   child: Icon(Icons.post_add_outlined),
+          // ),
         );
       },
     );
   }
 
-  Widget petItem(PetsModel model, context) => InkWell(
-    onTap: ()
-    {      
+  // Widget petItem(PetsModel model, context) => InkWell(
+  //   onTap: ()
+  //   {      
     
-      AppCubit.get(context).itemDetails(context: context , model: model);
+  //     AppCubit.get(context).itemDetails(context: context , model: model);
       
-    },
-    child: Row(
-          children: [
-            Expanded(
-              child: Card(
-                clipBehavior: Clip.antiAliasWithSaveLayer,
-                margin: EdgeInsets.symmetric(horizontal: 0),
-                elevation: 10,
-                child: Container(
-                  height: 150,
-                  clipBehavior: Clip.antiAliasWithSaveLayer,
-                  decoration: BoxDecoration(
-                       color: defaultColor),
-                  child: Image(
-                    fit: BoxFit.cover,
-                    image: NetworkImage(
-                      '${model.petImage}',
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              child: Container(
-                height: 110,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                        bottomRight: Radius.circular(20),
-                        topRight: Radius.circular(20)),
-                        boxShadow: [
-                          BoxShadow(
-                            blurRadius: 5,
-                            color: Colors.grey
-                          )
-                        ],
-                    color: Colors.white),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                '${model.petName}',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 22,
-                                    color: Colors.grey[700]),
-                              ),
-                            ),
-                            Icon(
-                              model.gender == 'male' ? Icons.male : Icons.female,
-                              color: Colors.grey[600],
-                              size: 25,
-                            )
-                          ],
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),
-                        Text(
-                          '${model.type}',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 20,
-                              color: Colors.grey[700]),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Text(
-                          '${model.age}',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                              color: Colors.grey[500]),
-                        ),
-                        // SizedBox(
-                        //   height: 10,
-                        // ),
-                        // Row(
-                        //   children: [
-                        //     Icon(
-                        //       Icons.location_on_rounded,
-                        //       color: defaultColor,
-                        //     ),
-                        //     SizedBox(
-                        //       width: 8,
-                        //     ),
-                        //     Text(
-                        //       'distance : ${model.distance}',
-                        //       style: TextStyle(
-                        //           fontWeight: FontWeight.w500,
-                        //           fontSize: 18,
-                        //           color: Colors.grey[500]),
-                        //     ),
-                        //   ],
-                        // ),
-                      ]),
-                ),
-              ),
-            ),
-          ],
-        ),
-  );
+  //   },
+  //   child: Row(
+  //         children: [
+  //           Expanded(
+  //             child: Card(
+  //               clipBehavior: Clip.antiAliasWithSaveLayer,
+  //               margin: EdgeInsets.symmetric(horizontal: 0),
+  //               elevation: 10,
+  //               child: Container(
+  //                 height: 150,
+  //                 clipBehavior: Clip.antiAliasWithSaveLayer,
+  //                 decoration: BoxDecoration(
+  //                      color: defaultColor),
+  //                 child: Image(
+  //                   fit: BoxFit.cover,
+  //                   image: NetworkImage(
+  //                     '${model.petImage}',
+  //                   ),
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //           Expanded(
+  //             child: Container(
+  //               height: 110,
+  //               decoration: BoxDecoration(
+  //                   borderRadius: BorderRadius.only(
+  //                       bottomRight: Radius.circular(20),
+  //                       topRight: Radius.circular(20)),
+  //                       boxShadow: [
+  //                         BoxShadow(
+  //                           blurRadius: 5,
+  //                           color: Colors.grey
+  //                         )
+  //                       ],
+  //                   color: Colors.white),
+  //               child: Padding(
+  //                 padding: const EdgeInsets.symmetric(horizontal: 20),
+  //                 child: Column(
+  //                     crossAxisAlignment: CrossAxisAlignment.start,
+  //                     mainAxisAlignment: MainAxisAlignment.center,
+  //                     children: [
+  //                       Row(
+  //                         children: [
+  //                           Expanded(
+  //                             child: Text(
+  //                               '${model.petName}',
+  //                               style: TextStyle(
+  //                                   fontWeight: FontWeight.w500,
+  //                                   fontSize: 22,
+  //                                   color: Colors.grey[700]),
+  //                             ),
+  //                           ),
+  //                           Icon(
+  //                             model.gender == 'male' ? Icons.male : Icons.female,
+  //                             color: Colors.grey[600],
+  //                             size: 25,
+  //                           )
+  //                         ],
+  //                       ),
+  //                       SizedBox(
+  //                         height: 5,
+  //                       ),
+  //                       Text(
+  //                         '${model.type}',
+  //                         style: TextStyle(
+  //                             fontWeight: FontWeight.w500,
+  //                             fontSize: 20,
+  //                             color: Colors.grey[700]),
+  //                       ),
+  //                       SizedBox(
+  //                         height: 10,
+  //                       ),
+  //                       Text(
+  //                         '${model.age}',
+  //                         style: TextStyle(
+  //                             fontWeight: FontWeight.w500,
+  //                             fontSize: 16,
+  //                             color: Colors.grey[500]),
+  //                       ),
+  //                       // SizedBox(
+  //                       //   height: 10,
+  //                       // ),
+  //                       // Row(
+  //                       //   children: [
+  //                       //     Icon(
+  //                       //       Icons.location_on_rounded,
+  //                       //       color: defaultColor,
+  //                       //     ),
+  //                       //     SizedBox(
+  //                       //       width: 8,
+  //                       //     ),
+  //                       //     Text(
+  //                       //       'distance : ${model.distance}',
+  //                       //       style: TextStyle(
+  //                       //           fontWeight: FontWeight.w500,
+  //                       //           fontSize: 18,
+  //                       //           color: Colors.grey[500]),
+  //                       //     ),
+  //                       //   ],
+  //                       // ),
+  //                     ]),
+  //               ),
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  // );
 
 
 
 
 
-      Widget categoryItem(CatogeryModel model,context ,  index ,) => InkWell(
-        onTap: ()
-        {
-          AppCubit.get(context).changeType(index);
-        },
-        child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            clipBehavior: Clip.antiAliasWithSaveLayer,
-                            width: index == AppCubit.get(context).indexPet ? 75 : 70,
-                            height: index == AppCubit.get(context).indexPet ? 75 : 70,
-                            decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20)),
-                            child: Center(
-                              child: Image(
-                                fit: BoxFit.cover,
-                                  width: index == AppCubit.get(context).indexPet ? 75 : 70,
-                                  height: index == AppCubit.get(context).indexPet ? 75 : 70,
-                                  image: NetworkImage(
-                                    '${model.image}',
-                                  )),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Text(
-                            '${model.name}',
-                            style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: index == AppCubit.get(context).indexPet ? 20 : 16,
-                                color: index == AppCubit.get(context).indexPet ?defaultColor : Colors.grey[700]),
-                          )
-                        ],
-                      ),
-      );
+      // Widget categoryItem(CatogeryModel model,context ,  index ,) => InkWell(
+      //   onTap: ()
+      //   {
+      //     AppCubit.get(context).changeType(index);
+      //   },
+      //   child: Column(
+      //                   mainAxisAlignment: MainAxisAlignment.center,
+      //                   children: [
+      //                     Container(
+      //                       clipBehavior: Clip.antiAliasWithSaveLayer,
+      //                       width: index == AppCubit.get(context).indexPet ? 75 : 70,
+      //                       height: index == AppCubit.get(context).indexPet ? 75 : 70,
+      //                       decoration: BoxDecoration(
+      //                           color: Colors.white,
+      //                           borderRadius: BorderRadius.circular(20)),
+      //                       child: Center(
+      //                         child: Image(
+      //                           fit: BoxFit.cover,
+      //                             width: index == AppCubit.get(context).indexPet ? 75 : 70,
+      //                             height: index == AppCubit.get(context).indexPet ? 75 : 70,
+      //                             image: NetworkImage(
+      //                               '${model.image}',
+      //                             )),
+      //                       ),
+      //                     ),
+      //                     SizedBox(
+      //                       height: 10,
+      //                     ),
+      //                     Text(
+      //                       '${model.name}',
+      //                       style: TextStyle(
+      //                           fontWeight: FontWeight.w500,
+      //                           fontSize: index == AppCubit.get(context).indexPet ? 20 : 16,
+      //                           color: index == AppCubit.get(context).indexPet ?defaultColor : Colors.grey[700]),
+      //                     )
+      //                   ],
+      //                 ),
+      // );
 }

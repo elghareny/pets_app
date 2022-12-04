@@ -76,3 +76,15 @@ class GetOwnerErrorState extends AppStates
 
   GetOwnerErrorState(this.error);
 }
+
+
+class GetMyPetsLoadingState extends AppStates{}
+class GetMyPetsSuccessState extends AppStates
+{
+}
+class GetMyPetsErrorState extends AppStates
+{
+  final String? error;
+
+  GetMyPetsErrorState(this.error);
+}

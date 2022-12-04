@@ -214,6 +214,19 @@ void uploadPetImage({
     {
       emit(AddPetDataErrorState(error.toString()));
     });
+
+
+    FirebaseFirestore.instance
+    .collection('users').doc(userModel!.uId).collection('myPets')
+    .add(petsModel.toMap())
+    .then((value) 
+    {
+      emit(AddPetDataSuccessState());
+    })
+    .catchError((error)
+    {
+      emit(AddPetDataErrorState(error.toString()));
+    });
   }
 
 
@@ -262,7 +275,7 @@ List<PetsModel> birds= [];
       print("Cats : ${cats.length}");
       emit(GetPetDataSuccessState());
 
-      getOwner(petsModel!.ownerId);
+      // getOwner(petsModel!.ownerId);
 
     })
     .catchError((error)
@@ -360,23 +373,23 @@ void updateProfile({
 ///////////////////////////////////////////////////////////////////////////////////////////////   owner     /////////////  
 
 
-void getOwner(String? ownerId)
-  {
-    emit(GetOwnerLoadingState());
-    FirebaseFirestore.instance
-    .collection('users')
-    .doc(ownerId)
-    .get()
-    .then((value) 
-    {
-      ownerModel = UserModel.fromjson(value.data()!);
-      emit(GetOwnerSuccessState());
-    })
-    .catchError((error)
-    {
-      emit(GetOwnerErrorState(error.toString()));
-    });
-  }
+// void getOwner(String? ownerId)
+//   {
+//     emit(GetOwnerLoadingState());
+//     FirebaseFirestore.instance
+//     .collection('users')
+//     .doc(ownerId)
+//     .get()
+//     .then((value) 
+//     {
+//       ownerModel = UserModel.fromjson(value.data()!);
+//       emit(GetOwnerSuccessState());
+//     })
+//     .catchError((error)
+//     {
+//       emit(GetOwnerErrorState(error.toString()));
+//     });
+//   }
 
 
 
@@ -394,6 +407,35 @@ void getOwner(String? ownerId)
     .catchError((error)
     {
     });
+  }
+
+List<PetsModel> myPets= [];
+
+
+  void getMyPets()
+  {
+    emit(GetMyPetsLoadingState());
+    FirebaseFirestore.instance
+    .collection('users').doc(token).collection('myPets')
+    .get()
+    .then((value) 
+    {
+      value.docs.forEach((element) { 
+      
+        myPets.add(PetsModel.fromjson(element.data()));
+        
+      });
+      print("MyPets : ${myPets.length}");
+      emit(GetMyPetsSuccessState());
+
+      // getOwner(petsModel!.ownerId);
+
+    })
+    .catchError((error)
+    {
+      emit(GetMyPetsErrorState(error.toString()));
+    });
+  
   }
 
 

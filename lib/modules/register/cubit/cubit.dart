@@ -78,6 +78,12 @@ void userCreate
     emit(CreateUserErrorState(error.toString()));
   });
 
+  FirebaseFirestore.instance
+  .collection('pets');
+
+  FirebaseFirestore.instance
+  .collection('users').doc(uId).collection('myPets');
+
 }
 
 

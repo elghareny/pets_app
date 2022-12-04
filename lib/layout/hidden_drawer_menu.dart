@@ -2,6 +2,7 @@ import 'package:ecommerce_app/layout/cubit/cubit.dart';
 import 'package:ecommerce_app/layout/cubit/states.dart';
 import 'package:ecommerce_app/layout/home.dart';
 import 'package:ecommerce_app/modules/login/login.dart';
+import 'package:ecommerce_app/modules/my_pets/my_pets.dart';
 import 'package:ecommerce_app/modules/profile/profile.dart';
 import 'package:ecommerce_app/shared/components/components.dart';
 import 'package:ecommerce_app/shared/components/constant.dart';
@@ -24,6 +25,17 @@ class HiddenDrawer extends StatelessWidget {
               color: Colors.white, fontSize: 35, fontWeight: FontWeight.w400),
         ),
         HomeScreen()),
+    ScreenHiddenDrawer(
+        ItemHiddenMenu(
+          name: 'My Pets',
+          baseStyle: TextStyle(
+              color: Colors.grey[400],
+              fontSize: 25,
+              fontWeight: FontWeight.w400),
+          selectedStyle: const TextStyle(
+              color: Colors.white, fontSize: 35, fontWeight: FontWeight.w400),
+        ),
+        MyPets()),
     ScreenHiddenDrawer(
         ItemHiddenMenu(
           name: 'Profile',
@@ -59,7 +71,7 @@ class HiddenDrawer extends StatelessWidget {
                   AppCubit.get(context).logout();
                   navigatTo(context, LoginScreen());
                 }, 
-                icon: Icon(Icons.logout,size: 25,)),
+                icon: const Icon(Icons.logout,size: 25,)),
               // child: CircleAvatar(
               //   backgroundColor: Colors.grey[500],
               //   radius: 23,
